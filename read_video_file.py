@@ -5,13 +5,15 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-output_video = 'text.mp4'
+name = 12
+input_video = f'shoulders_arms_videos/{name}.mp4'
+output_video = f'outputs/{name}.mp4'
 
 fourcc = cv2.VideoWriter_fourcc(*'MP4V')
 
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(input_video)
 out = cv2.VideoWriter(output_video,fourcc, 15, (int(cap.get(3)), int(cap.get(4))))
 
 # Check if camera opened successfully
@@ -27,7 +29,7 @@ with mp_holistic.Holistic(
         if not success:
             print("Ignoring empty camera frame.")
             # If loading a video, use 'break' instead of 'continue'.
-            continue
+            break
 
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -53,12 +55,13 @@ with mp_holistic.Holistic(
                 .get_default_pose_landmarks_style())
         # Flip the image horizontally for a selfie-view display.
         cv2.imshow('MediaPipe Holistic', cv2.flip(image, 1))
+        out.write(image)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
-# When everything done, release the video capture object
-cap.release()
-# Save Video
-out.release()
-# Closes all the frames
-cv2.destroyAllWindows()
+    # When everything done, release the video capture object
+    cap.release()
+    # Save Video
+    out.release()
+    # Closes all the frames
+    cv2.destroyAllWindows()
